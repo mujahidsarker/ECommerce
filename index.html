@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --text: #1A1A18;
+    --muted: #6B6B67;
+    --border: #E2DED6;
+    --accent: #2D5016;
+    --accent-light: #EEF4E8;
+    --accent-hover: #3D6B1E;
+    --danger: #C0392B;
+    --radius: 16px;
+    --shadow: 0 2px 16px rgba(0,0,0,0.07);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 clamp(1rem, 5vw, 3rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .cart-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 8px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  .cart-btn:hover { background: var(--accent-hover); }
+  .cart-count {
+    background: #fff;
+    color: var(--accent);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Main ── */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem clamp(1rem, 4vw, 2rem);
+  }
+
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .page-subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 2.5rem;
+  }
+
+  /* ── Product Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+
+  .card-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    background: var(--bg);
+    display: block;
+  }
+
+  .card-img-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #e8ede2, #c8d8b8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--accent);
+  }
+
+  .card-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    color: var(--muted);
+    font-size: 0.825rem;
+    line-height: 1.5;
+    flex: 1;
+    margin-bottom: 1rem;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .price {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--accent);
+  }
+
+  .price span {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .order-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .order-btn:hover { background: var(--accent-hover); }
+  .order-btn:active { transform: scale(0.97); }
+
+  /* ── Loading / Error States ── */
+  .state-box {
+    text-align: center;
+    padding: 5rem 1rem;
+    color: var(--muted);
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Modal Overlay ── */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    animation: slideUp 0.2s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--bg);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: var(--border); }
+
+  .modal h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .modal-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--accent-light);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 1.25rem 0;
+  }
+
+  .modal-product img, .modal-product .mp-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .mp-icon {
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .modal-product-info strong {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .modal-product-info .mp-price {
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+
+  .qty-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .qty-row input { max-width: 100px; }
+  .qty-total {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .qty-total strong { color: var(--text); }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .submit-btn:hover { background: var(--accent-hover); }
+  .submit-btn:disabled { background: var(--border); cursor: not-allowed; color: var(--muted); }
+
+  /* ── Success Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 40px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    z-index: 300;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Config Banner ── */
+  .config-banner {
+    background: #FFF8E1;
+    border: 1px solid #FFD600;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+    color: #5D4037;
+    line-height: 1.6;
+  }
+  .config-banner code {
+    background: rgba(0,0,0,0.07);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">🌿 FreshStore</div>
+  <button class="cart-btn" onclick="openCart()">
+    🛒 Cart
+    <span class="cart-count" id="cartCount">0</span>
+  </button>
+</header>
+
+<!-- Main -->
+<main>
+  <!-- Config banner shown until API URL is set -->
+  <div class="config-banner" id="configBanner">
+    ⚙️ <strong>Setup required:</strong> Replace <code>YOUR_APPS_SCRIPT_URL</code> in the JavaScript below with your Google Apps Script web app URL. See <strong>Code.gs</strong> for setup instructions.
+  </div>
+
+  <h1 class="page-title">Our Products</h1>
+  <p class="page-subtitle">Fresh picks, straight to your door.</p>
+
+  <div id="productArea">
+    <div class="state-box">
+      <div class="spinner"></div>
+      <p>Loading products…</p>
+    </div>
+  </div>
+</main>
+
+<!-- Order Modal -->
+<div class="overlay" id="orderModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2>Place Order</h2>
+    <p style="color:var(--muted);font-size:0.875rem;">Fill in your details below</p>
+
+    <div class="modal-product" id="modalProduct">
+      <div class="mp-icon" id="modalIcon">📦</div>
+      <div class="modal-product-info">
+        <strong id="modalName">Product Name</strong>
+        <div class="mp-price" id="modalPrice">৳ 0</div>
+      </div>
+    </div>
+
+    <label>Your Name</label>
+    <input type="text" id="custName" placeholder="e.g. Rahim Mia" />
+
+    <label>Phone Number</label>
+    <input type="tel" id="custPhone" placeholder="e.g. 01700000000" />
+
+    <label>Quantity</label>
+    <div class="qty-row">
+      <input type="number" id="qtyInput" value="1" min="1" max="99" oninput="updateTotal()" />
+      <div class="qty-total">Total: <strong id="qtyTotal">৳ 0</strong></div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitOrder()">✅ Confirm Order</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">🎉 Order placed successfully!</div>
+
+<script>
+  // ══════════════════════════════════════════════
+  // 🔧 CONFIGURATION — paste your deployed URL here
+  // ══════════════════════════════════════════════
+  const API_URL = "https://script.google.com/macros/s/AKfycbzFQ2SzEotS0gV-KtwAbxLA2hG2lRed3z05zP-zTXsfkLe44Dxw-ta1RlQuDUZbTQt8/exec";
+  // ══════════════════════════════════════════════
+
+  let selectedProduct = null;
+  let cartCount = 0;
+
+  // ── Demo products shown when API is not configured ──
+  const DEMO_PRODUCTS = [
+    { id: 1, name: "Fresh Hilsa Fish", price: 850, image_url: "", description: "Premium quality Padma Hilsa, 1kg whole fish." },
+    { id: 2, name: "Organic Rice (5kg)", price: 420, image_url: "", description: "Aromatic BRRI dhan 50 variety, locally sourced." },
+    { id: 3, name: "Mustard Oil (1L)", price: 280, image_url: "", description: "Cold-pressed pure mustard oil from Rajshahi." },
+    { id: 4, name: "Mixed Vegetable Box", price: 180, image_url: "", description: "Seasonal local vegetables, freshly harvested." },
+    { id: 5, name: "Sundarban Honey (500g)", price: 650, image_url: "", description: "Pure wild honey from the Sundarbans mangrove." },
+    { id: 6, name: "Deshi Chicken (1kg)", price: 380, image_url: "", description: "Free-range country chicken, farm fresh." },
+  ];
+
+  const ICONS = ["🐟", "🌾", "🫙", "🥦", "🍯", "🍗", "🛒", "📦", "🥚", "🧅", "🥕", "🍅"];
+
+  function getIcon(name, idx) {
+    const n = name.toLowerCase();
+    if (n.includes("fish") || n.includes("hilsa")) return "🐟";
+    if (n.includes("rice") || n.includes("wheat")) return "🌾";
+    if (n.includes("oil") || n.includes("ghee")) return "🫙";
+    if (n.includes("vegetable") || n.includes("veggie")) return "🥦";
+    if (n.includes("honey")) return "🍯";
+    if (n.includes("chicken") || n.includes("meat")) return "🍗";
+    if (n.includes("egg")) return "🥚";
+    if (n.includes("onion")) return "🧅";
+    return ICONS[idx % ICONS.length];
+  }
+
+  async function loadProducts() {
+    const area = document.getElementById("productArea");
+
+    if (API_URL === "YOUR_APPS_SCRIPT_URL") {
+      renderProducts(DEMO_PRODUCTS);
+      return;
+    }
+
+    document.getElementById("configBanner").style.display = "none";
+
+    try {
+      const res = await fetch(`${API_URL}?action=getProducts`);
+      const data = await res.json();
+      if (data.success && data.products.length) {
+        renderProducts(data.products);
+      } else {
+        area.innerHTML = `<div class="state-box"><p>No products found. Add some in your Google Sheet!</p></div>`;
+      }
+    } catch (err) {
+      area.innerHTML = `<div class="state-box"><p style="color:var(--danger)">Could not load products. Check your API URL.</p></div>`;
+    }
+  }
+
+  function renderProducts(products) {
+    const area = document.getElementById("productArea");
+    area.innerHTML = `<div class="grid">${products.map((p, i) => productCard(p, i)).join("")}</div>`;
+  }
+
+  function productCard(p, i) {
+    const icon = getIcon(p.name, i);
+    const imgHtml = p.image_url
+      ? `<img class="card-img" src="${p.image_url}" alt="${p.name}" onerror="this.outerHTML='<div class=card-img-placeholder>${icon}</div>'" />`
+      : `<div class="card-img-placeholder">${icon}</div>`;
+
+    return `
+      <div class="card">
+        ${imgHtml}
+        <div class="card-body">
+          <div class="card-name">${p.name}</div>
+          <div class="card-desc">${p.description || ""}</div>
+          <div class="card-footer">
+            <div class="price">৳ ${Number(p.price).toLocaleString()} <span>/ unit</span></div>
+            <button class="order-btn" onclick='openOrder(${JSON.stringify(p)}, "${icon}")'>Order Now</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function openOrder(product, icon) {
+    selectedProduct = product;
+    document.getElementById("modalName_display")?.remove();
+    document.getElementById("modalName").textContent = product.name;
+    document.getElementById("modalPrice").textContent = "৳ " + Number(product.price).toLocaleString();
+    document.getElementById("modalIcon").textContent = icon;
+    document.getElementById("qtyInput").value = 1;
+    document.getElementById("custName").value = "";
+    document.getElementById("custPhone").value = "";
+    updateTotal();
+    document.getElementById("orderModal").classList.add("open");
+  }
+
+  function closeModal() {
+    document.getElementById("orderModal").classList.remove("open");
+  }
+
+  function updateTotal() {
+    const qty = parseInt(document.getElementById("qtyInput").value) || 1;
+    const total = qty * (selectedProduct?.price || 0);
+    document.getElementById("qtyTotal").textContent = "৳ " + total.toLocaleString();
+  }
+
+  async function submitOrder() {
+    const name = document.getElementById("custName").value.trim();
+    const phone = document.getElementById("custPhone").value.trim();
+    const qty = parseInt(document.getElementById("qtyInput").value) || 1;
+
+    if (!name || !phone) { alert("Please fill in your name and phone number."); return; }
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.textContent = "Placing order…";
+
+    const orderData = {
+      action: "placeOrder",
+      customer_name: name,
+      phone: phone,
+      product_id: selectedProduct.id,
+      product_name: selectedProduct.name,
+      quantity: qty,
+      total_price: qty * selectedProduct.price
+    };
+
+    if (API_URL === "YOUR_APPS_SCRIPT_URL") {
+      // Demo mode
+      await new Promise(r => setTimeout(r, 1000));
+      onOrderSuccess();
+    } else {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify(orderData)
+        });
+        const data = await res.json();
+        if (data.success) onOrderSuccess();
+        else alert("Error: " + data.message);
+      } catch {
+        alert("Network error. Please try again.");
+      }
+    }
+
+    btn.disabled = false;
+    btn.textContent = "✅ Confirm Order";
+  }
+
+  function onOrderSuccess() {
+    closeModal();
+    cartCount++;
+    document.getElementById("cartCount").textContent = cartCount;
+    showToast("🎉 Order placed! We'll contact you soon.");
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 3500);
+  }
+
+  function openCart() {
+    if (cartCount === 0) showToast("Your cart is empty — add some products!");
+    else showToast(`You have ${cartCount} order(s) placed. Check your WhatsApp!`);
+  }
+
+  // Close modal on overlay click
+  document.getElementById("orderModal").addEventListener("click", function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  loadProducts();
+</script>
+</body>
+</html>
